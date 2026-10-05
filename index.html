@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartQueue - AI-Based Canteen Queue & Wait Prediction</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <span class="brand-title">SmartQueue AI</span>
+          <span class="brand-subtitle">Campus Canteen Live System</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="token">Get Token</button>
+        <button class="nav-btn" data-tab="myqueue">My Queue</button>
+        <button class="nav-btn" data-tab="menu">Menu</button>
+        <button class="nav-btn admin-nav" data-tab="admin">Admin Panel</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- TAB 1: STUDENT DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content active">
+      
+      <!-- Live Status Banner -->
+      <div class="status-banner">
+        <div class="status-left">
+          <span class="live-dot"></span>
+          <span class="status-title">Live Canteen Traffic</span>
+          <span class="badge badge-success" id="crowdBadge">⚡ Moderate Flow</span>
+        </div>
+        <div class="status-time" id="currentTime">Live Sync: Active</div>
+      </div>
+
+      <!-- Key Dashboard Metric Cards -->
+      <div class="metrics-grid">
+        <!-- Current Crowd -->
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Current Crowd</span>
+            <div class="metric-icon crowd-icon">👥</div>
+          </div>
+          <div class="metric-value" id="dashCrowd">42 <span class="metric-unit">Students</span></div>
+          <p class="metric-hint">Inside canteen area</p>
+        </div>
+
+        <!-- Now Serving -->
+        <div class="card metric-card highlight-card">
+          <div class="metric-header">
+            <span class="metric-label">Now Serving</span>
+            <div class="metric-icon serving-icon">🔔</div>
+          </div>
+          <div class="metric-value token-highlight" id="dashNowServing">A119</div>
+          <p class="metric-hint">At pickup counters</p>
+        </div>
+
+        <!-- Active Counters -->
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Active Counters</span>
+            <div class="metric-icon counter-icon">🏢</div>
+          </div>
+          <div class="metric-value" id="dashCounters">3 <span class="metric-unit">Counters</span></div>
+          <p class="metric-hint">Operating at full capacity</p>
+        </div>
+
+        <!-- AI Estimated Wait -->
+        <div class="card metric-card ai-card">
+          <div class="metric-header">
+            <span class="metric-label">AI Estimated Wait</span>
+            <div class="metric-icon ai-icon">🧠</div>
+          </div>
+          <div class="metric-value ai-highlight" id="dashEstimatedWait">8 <span class="metric-unit">Minutes</span></div>
+          <p class="metric-hint">Calculated in real-time</p>
+        </div>
+      </div>
+
+      <!-- Queue Progress Bar Card -->
+      <div class="card progress-card">
+        <div class="progress-header">
+          <div>
+            <h3 class="card-title">Live Queue Status & Progress</h3>
+            <p class="card-subtitle">Serving token <strong id="progressNowServing">A119</strong> &bull; <span id="progressWaitingCount">12</span> students waiting</p>
+          </div>
+          <span class="badge badge-primary" id="progressPercentage">75% Service Pace</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill" style="width: 65%;"></div>
+        </div>
+        <div class="progress-labels">
+          <span>Order Placed</span>
+          <span>In Preparation</span>
+          <span class="active-label">Now Serving (<strong id="lblNowServing">A119</strong>)</span>
+          <span>Ready for Pickup</span>
+        </div>
+      </div>
+
+      <!-- AI Waiting Time Prediction Card -->
+      <div class="card ai-prediction-card">
+        <div class="ai-pred-header">
+          <div class="ai-badge">
+            <span class="ai-sparkle">✨</span> AI Prediction Engine
+          </div>
+          <h2 class="ai-pred-title" id="aiPredMessage">AI-Based Predicted Waiting Time: 8 Minutes</h2>
+        </div>
+        <div class="ai-formula-box">
+          <div class="formula-label">Algorithm Formula:</div>
+          <div class="formula-code">
+            waitingTime = (queueLength × averageServiceTime) / activeCounters
+          </div>
+          <div class="formula-breakdown">
+            <div class="param-box">
+              <span class="param-name">queueLength</span>
+              <span class="param-val" id="formulaQueue">12</span>
+            </div>
+            <span class="op">×</span>
+            <div class="param-box">
+              <span class="param-name">averageServiceTime</span>
+              <span class="param-val" id="formulaAvg">2 min</span>
+            </div>
+            <span class="op">÷</span>
+            <div class="param-box">
+              <span class="param-name">activeCounters</span>
+              <span class="param-val" id="formulaCounters">3</span>
+            </div>
+            <span class="op">=</span>
+            <div class="param-box result-box">
+              <span class="param-name">Estimated Time</span>
+              <span class="param-val" id="formulaResult">8 Minutes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="dashboard-actions">
+        <button class="btn btn-primary btn-large action-nav-btn" data-target="token">
+          <span class="btn-icon">🎫</span>
+          <div class="btn-text-wrap">
+            <strong>Get Queue Token</strong>
+            <small>Instant queue slot assignment</small>
+          </div>
+        </button>
+
+        <button class="btn btn-outline btn-large action-nav-btn" data-target="myqueue">
+          <span class="btn-icon">👤</span>
+          <div class="btn-text-wrap">
+            <strong>My Queue</strong>
+            <small>Track personal token position</small>
+          </div>
+        </button>
+
+        <button class="btn btn-outline btn-large action-nav-btn" data-target="menu">
+          <span class="btn-icon">📋</span>
+          <div class="btn-text-wrap">
+            <strong>Menu</strong>
+            <small>Browse items and prices</small>
+          </div>
+        </button>
+
+        <button class="btn btn-secondary btn-large action-nav-btn" data-target="admin">
+          <span class="btn-icon">⚙️</span>
+          <div class="btn-text-wrap">
+            <strong>Admin</strong>
+            <small>Staff counter control panel</small>
+          </div>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: GET QUEUE TOKEN -->
+    <section id="tab-token" class="tab-content">
+      <div class="card section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Get Your Queue Token</h2>
+            <p class="section-subtitle">Skip physical queues. Get an automated AI-predicted canteen token.</p>
+          </div>
+          <button class="btn btn-primary" id="btnGenerateToken">
+            <span>🎫</span> Generate Token Now
+          </button>
+        </div>
+
+        <!-- Token Display Result (Displayed when generated or available) -->
+        <div class="token-display-box" id="tokenDisplayBox">
+          <div class="ticket-header">
+            <div class="ticket-canteen-name">CAMPUS CANTEEN EXPRESS</div>
+            <div class="ticket-badge" id="tokenTicketStatus">STATUS: WAITING</div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-token-title">YOUR TOKEN NUMBER</div>
+            <div class="ticket-token-number" id="tokenTicketNumber">A127</div>
+            <p class="ticket-note">Please present this token at Counter 1, 2 or 3</p>
+
+            <div class="ticket-grid">
+              <div class="ticket-stat">
+                <span class="ticket-stat-lbl">Token</span>
+                <strong class="ticket-stat-val" id="tokenVal">A127</strong>
+              </div>
+              <div class="ticket-stat">
+                <span class="ticket-stat-lbl">Position</span>
+                <strong class="ticket-stat-val" id="tokenPosition">8</strong>
+              </div>
+              <div class="ticket-stat">
+                <span class="ticket-stat-lbl">People Ahead</span>
+                <strong class="ticket-stat-val" id="tokenAhead">7</strong>
+              </div>
+              <div class="ticket-stat">
+                <span class="ticket-stat-lbl">Estimated Wait</span>
+                <strong class="ticket-stat-val highlight" id="tokenWait">8 Minutes</strong>
+              </div>
+            </div>
+
+            <div class="ticket-status-row">
+              <span>Current Status:</span>
+              <span class="status-pill status-waiting" id="tokenPillStatus">WAITING</span>
+            </div>
+          </div>
+
+          <div class="ticket-footer">
+            <span>AI Powered SmartQueue</span>
+            <span>Refreshes automatically</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: MY QUEUE -->
+    <section id="tab-myqueue" class="tab-content">
+      <div class="card section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">My Active Queue Status</h2>
+            <p class="section-subtitle">Real-time status of your food order pickup</p>
+          </div>
+          <button class="btn btn-outline" id="btnRefreshMyQueue">🔄 Refresh Live</button>
+        </div>
+
+        <div id="myQueueContent">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: MENU -->
+    <section id="tab-menu" class="tab-content">
+      <div class="card section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Canteen Menu</h2>
+            <p class="section-subtitle">Freshly prepared meals, snacks, and hot beverages</p>
+          </div>
+          <span class="badge badge-primary">Standard Pricing</span>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: ADMIN PANEL -->
+    <section id="tab-admin" class="tab-content">
+      <div class="card section-card admin-dashboard">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Canteen Counter Admin Panel</h2>
+            <p class="section-subtitle">Staff management console for token dispatch & counter controls</p>
+          </div>
+          <button class="btn btn-outline-danger" id="btnResetDemo">🔄 Reset Demo Data</button>
+        </div>
+
+        <!-- Admin Metrics -->
+        <div class="metrics-grid admin-metrics">
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Students Waiting</span>
+              <div class="metric-icon">⏳</div>
+            </div>
+            <div class="metric-value" id="adminWaiting">12</div>
+            <p class="metric-hint">In active queue</p>
+          </div>
+
+          <div class="card metric-card highlight-card">
+            <div class="metric-header">
+              <span class="metric-label">Now Serving</span>
+              <div class="metric-icon">📢</div>
+            </div>
+            <div class="metric-value token-highlight" id="adminNowServing">A119</div>
+            <p class="metric-hint">At active pickup window</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Completed Today</span>
+              <div class="metric-icon">✅</div>
+            </div>
+            <div class="metric-value" id="adminCompleted">86</div>
+            <p class="metric-hint">Orders fulfilled</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Active Counters</span>
+              <div class="metric-icon">🏢</div>
+            </div>
+            <div class="metric-value" id="adminCounters">3</div>
+            <div class="counter-toggle-btns">
+              <button class="btn-micro" id="btnDecCounter">-</button>
+              <button class="btn-micro" id="btnIncCounter">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="admin-actions-bar">
+          <button class="btn btn-success btn-large" id="btnCallNext">
+            <span>📢</span> Call Next
+          </button>
+          <button class="btn btn-primary btn-large" id="btnCompleteToken">
+            <span>✅</span> Complete Token
+          </button>
+        </div>
+
+        <!-- Live Queue List in Admin -->
+        <div class="card queue-list-card">
+          <div class="queue-list-header">
+            <h3>Active Queue Stream</h3>
+            <span class="badge badge-info" id="queueTotalBadge">12 In Queue</span>
+          </div>
+          <div class="queue-tokens-container" id="queueTokensList">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Token generated successfully!</div>
+
+  <footer class="footer">
+    <p>SmartQueue &copy; College Canteen Management System &bull; Fast AI Demo Prototype</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

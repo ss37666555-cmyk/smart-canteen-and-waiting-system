@@ -1,0 +1,28 @@
+{
+  "name": "smartqueue-canteen",
+  "version": "1.0.0",
+  "description": "AI-Based SmartQueue and Waiting Time Prediction System for a College Canteen",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/**/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js"
+  },
+  "keywords": [
+    "smartqueue",
+    "canteen",
+    "waiting-time-prediction",
+    "express",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}
